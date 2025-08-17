@@ -211,6 +211,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <header>
@@ -244,26 +245,8 @@
     <main class="container">
         <div class="main-content">
             <section class="content-section">
-                <h2>Latest Blog Posts</h2>
-                <div class="blog-posts">
-                    <article class="blog-post">
-                        <h3>Getting Started with PagesCMS</h3>
-                        <div class="meta">Published on January 15, 2024 by Admin</div>
-                        <p class="excerpt">Learn how to set up and configure PagesCMS for your static website. This comprehensive guide covers everything from basic setup to advanced configurations.</p>
-                    </article>
-
-                    <article class="blog-post">
-                        <h3>Building Modern Websites</h3>
-                        <div class="meta">Published on January 12, 2024 by Admin</div>
-                        <p class="excerpt">Discover the latest trends and best practices in modern web development. From responsive design to performance optimization.</p>
-                    </article>
-
-                    <article class="blog-post">
-                        <h3>Content Management Made Easy</h3>
-                        <div class="meta">Published on January 10, 2024 by Admin</div>
-                        <p class="excerpt">Explore how PagesCMS simplifies content management for static sites, making it easy for non-technical users to update content.</p>
-                    </article>
-                </div>
+                <h2 id="section-title">Latest Blog Posts</h2>
+                <div id="content-area"></div>
             </section>
 
             <aside class="sidebar">
@@ -299,5 +282,144 @@
             <p>&copy; 2024 My PagesCMS Website. Powered by PagesCMS.</p>
         </div>
     </footer>
+    <script>
+      const contentArea = document.getElementById('content-area');
+      const sectionTitle = document.getElementById('section-title');
+
+      const EMBEDDED_POSTS_INDEX = [
+        {
+          slug: 'getting-started-with-pagescms',
+          title: 'Getting Started with PagesCMS',
+          date: '2024-01-15',
+          author: 'Admin',
+          excerpt: 'Learn how to set up and configure PagesCMS for your static website. This comprehensive guide covers everything from basic setup to advanced configurations.',
+          cover: '/media/blog/pagescms-tutorial.jpg',
+          path: 'content/posts/2024-01-15-getting-started-with-pagescms.md',
+          tags: ['Tech', 'Tutorial']
+        },
+        {
+          slug: 'building-modern-websites',
+          title: 'Building Modern Websites',
+          date: '2024-01-12',
+          author: 'Admin',
+          excerpt: 'Discover the latest trends and best practices in modern web development. From responsive design to performance optimization.',
+          cover: '/media/blog/modern-web.jpg',
+          path: 'content/posts/2024-01-12-building-modern-websites.md',
+          tags: ['Tech', 'News']
+        },
+        {
+          slug: 'content-management-made-easy',
+          title: 'Content Management Made Easy',
+          date: '2024-01-10',
+          author: 'Admin',
+          excerpt: 'Explore how PagesCMS simplifies content management for static sites, making it easy for non-technical users to update content.',
+          cover: '/media/blog/cms-easy.jpg',
+          path: 'content/posts/2024-01-10-content-management-made-easy.md',
+          tags: ['Tutorial', 'Lifestyle']
+        }
+      ];
+
+      let postsIndexCache = null;
+
+      function setActiveNav() {
+        const links = document.querySelectorAll('.nav-links a');
+        links.forEach(l => l.classList.remove('active'));
+        const hash = location.hash || '#home';
+        const active = Array.from(links).find(l => l.getAttribute('href') === hash);
+        if (active) active.classList.add('active');
+      }
+
+      async function loadMarkdown(path) {
+        try {
+          const res = await fetch(path);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const text = await res.text();
+          return marked.parse(text);
+        } catch (e) {
+          return `
+            <div class="cms-notice" style="margin:0">
+              <h3>Unable to load content</h3>
+              <p>If you opened this file from your computer (file://), your browser blocks loading local files.</p>
+              <p>Run a local server and open http://localhost instead:</p>
+              <pre style="text-align:left; overflow:auto; background:#111; color:#eee; padding:12px; border-radius:6px;"># Python 3\npython -m http.server 5500\n\n# or Node.js\nnpx serve .</pre>
+            </div>`;
+        }
+      }
+
+      async function loadPostsIndex() {
+        if (postsIndexCache) return postsIndexCache;
+        try {
+          const res = await fetch('content/posts/index.json');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          postsIndexCache = await res.json();
+        } catch (e) {
+          postsIndexCache = EMBEDDED_POSTS_INDEX;
+        }
+        return postsIndexCache;
+      }
+
+      function renderList(posts) {
+        contentArea.innerHTML = '';
+        const list = document.createElement('div');
+        list.className = 'blog-posts';
+        posts.forEach(p => {
+          const article = document.createElement('article');
+          article.className = 'blog-post';
+          article.innerHTML = `
+            <h3><a href="#post/${p.slug}" style="text-decoration:none; color:inherit;">${p.title}</a></h3>
+            <div class="meta">Published on ${new Date(p.date).toLocaleDateString()} by ${p.author || 'Unknown'}</div>
+            <p class="excerpt">${p.excerpt || ''}</p>
+          `;
+          list.appendChild(article);
+        });
+        contentArea.appendChild(list);
+      }
+
+      async function renderHome() {
+        sectionTitle.textContent = 'Home';
+        const html = await loadMarkdown('content/pages/home.md');
+        contentArea.innerHTML = `<div class="markdown-body">${html}</div>`;
+      }
+
+      async function renderPage(slug, label) {
+        sectionTitle.textContent = label || slug;
+        const html = await loadMarkdown(`content/pages/${slug}.md`);
+        contentArea.innerHTML = `<div class="markdown-body">${html}</div>`;
+      }
+
+      async function renderBlog() {
+        sectionTitle.textContent = 'Latest Blog Posts';
+        const posts = await loadPostsIndex();
+        renderList(posts);
+      }
+
+      async function renderPost(slug) {
+        const posts = await loadPostsIndex();
+        const post = posts.find(p => p.slug === slug);
+        if (!post) {
+          sectionTitle.textContent = 'Post not found';
+          contentArea.innerHTML = '<p>We could not find that post.</p>';
+          return;
+        }
+        sectionTitle.textContent = post.title;
+        const html = await loadMarkdown(post.path);
+        const meta = `<div class=\"meta\" style=\"margin: 0 0 1rem 0; color:#6b7280;\">${new Date(post.date).toLocaleDateString()} ${post.author ? ' • ' + post.author : ''}</div>`;
+        contentArea.innerHTML = `${meta}<div class=\"markdown-body\">${html}</div>`;
+      }
+
+      async function router() {
+        setActiveNav();
+        const hash = (location.hash || '#home').replace(/^#/, '');
+        if (hash === 'home' || hash === '') return renderHome();
+        if (hash === 'about') return renderPage('about', 'About');
+        if (hash === 'contact') return renderPage('contact', 'Contact');
+        if (hash === 'blog') return renderBlog();
+        if (hash.startsWith('post/')) return renderPost(hash.split('/')[1]);
+        return renderHome();
+      }
+
+      window.addEventListener('hashchange', router);
+      window.addEventListener('DOMContentLoaded', router);
+    </script>
 </body>
 </html>

@@ -1,0 +1,33 @@
+[
+  {
+    "slug": "getting-started-with-pagescms",
+    "title": "Getting Started with PagesCMS",
+    "date": "2024-01-15",
+    "author": "Admin",
+    "excerpt": "Learn how to set up and configure PagesCMS for your static website. This comprehensive guide covers everything from basic setup to advanced configurations.",
+    "cover": "/media/blog/pagescms-tutorial.jpg",
+    "path": "content/posts/2024-01-15-getting-started-with-pagescms.md",
+    "tags": ["Tech", "Tutorial"]
+  },
+  {
+    "slug": "building-modern-websites",
+    "title": "Building Modern Websites",
+    "date": "2024-01-12",
+    "author": "Admin",
+    "excerpt": "Discover the latest trends and best practices in modern web development. From responsive design to performance optimization.",
+    "cover": "/media/blog/modern-web.jpg",
+    "path": "content/posts/2024-01-12-building-modern-websites.md",
+    "tags": ["Tech", "News"]
+  },
+  {
+    "slug": "content-management-made-easy",
+    "title": "Content Management Made Easy",
+    "date": "2024-01-10",
+    "author": "Admin",
+    "excerpt": "Explore how PagesCMS simplifies content management for static sites, making it easy for non-technical users to update content.",
+    "cover": "/media/blog/cms-easy.jpg",
+    "path": "content/posts/2024-01-10-content-management-made-easy.md",
+    "tags": ["Tutorial", "Lifestyle"]
+  }
+]
+
