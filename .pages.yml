@@ -1,0 +1,113 @@
+media:
+  input: media
+  output: /media
+
+content:
+  - name: pages
+    label: Pages
+    type: collection
+    path: content/pages
+    view:
+      fields: [title, published, date]
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: published
+        label: Published
+        type: boolean
+        default: true
+      - name: date
+        label: Date
+        type: date
+      - name: description
+        label: Description
+        type: string
+        options:
+          maxlength: 160
+      - name: cover
+        label: Cover Image
+        type: image
+      - name: body
+        label: Content
+        type: rich-text
+
+  - name: posts
+    label: Blog Posts
+    type: collection
+    path: content/posts
+    view:
+      fields: [title, published, date, author]
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: published
+        label: Published
+        type: boolean
+        default: true
+      - name: date
+        label: Date
+        type: date
+      - name: author
+        label: Author
+        type: string
+      - name: tags
+        label: Tags
+        type: select
+        options:
+          multiple: true
+          creatable: true
+          values: [Tech, News, Lifestyle, Tutorial]
+      - name: excerpt
+        label: Excerpt
+        type: text
+        options:
+          maxlength: 200
+      - name: cover
+        label: Cover Image
+        type: image
+      - name: body
+        label: Content
+        type: rich-text
+
+  - name: site
+    label: Site Settings
+    path: data/site.json
+    type: file
+    fields:
+      - name: title
+        label: Website Title
+        type: string
+        required: true
+      - name: description
+        label: Website Description
+        type: text
+      - name: url
+        label: Website URL
+        type: string
+        pattern:
+          regex: ^(https?://)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/[^\s]*)?$
+          message: Please enter a valid URL
+      - name: logo
+        label: Logo
+        type: image
+      - name: social
+        label: Social Media
+        type: object
+        fields:
+          - name: twitter
+            label: Twitter Handle
+            type: string
+          - name: facebook
+            label: Facebook URL
+            type: string
+          - name: instagram
+            label: Instagram Handle
+            type: string
+
+settings:
+  content:
+    merge: true

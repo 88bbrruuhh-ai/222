@@ -1,0 +1,11 @@
+{
+  "title": "My PagesCMS Website",
+  "description": "A beautiful website powered by PagesCMS for easy content management",
+  "url": "https://mywebsite.com",
+  "logo": "/media/logo.png",
+  "social": {
+    "twitter": "@mywebsite",
+    "facebook": "https://facebook.com/mywebsite",
+    "instagram": "@mywebsite"
+  }
+}
